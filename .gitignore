@@ -1,0 +1,19 @@
+# Extensiones de configuración local
+.env
+config.local.php
+
+# Logs y archivos temporales
+*.log
+npm-debug.log*
+.tmp/
+
+# Carpetas de dependencias (si usas Composer o Node)
+vendor/
+node_modules/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor (VS Code)
+.vscode/
