@@ -17,6 +17,7 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
             --accent-blue: #0056b3;
             --bg-light: #f4f7f9;
             --success-whatsapp: #25D366;
+            --danger-pdf: #dc3545;
         }
 
         body { 
@@ -31,28 +32,6 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
             margin-bottom: 2rem;
         }
 
-        /* Tarjeta de resumen profesional */
-        .stat-card {
-            border: none;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            background: rgba(0, 33, 71, 0.1);
-            color: var(--primary-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        /* Tabla estilizada */
         .table-container { 
             background: white; 
             border-radius: 15px; 
@@ -76,12 +55,28 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
         }
 
         .table tbody tr { transition: all 0.2s; vertical-align: middle; }
-        .table tbody tr:hover { background-color: #fcfdfe; }
 
-        .client-name { font-weight: 600; color: var(--primary-blue); margin-bottom: 0; }
-        .id-badge { font-size: 0.7rem; background: #eee; padding: 2px 6px; border-radius: 4px; }
-        
-        /* Botones modernos */
+        .estado-selector {
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+
+        /* Botón PDF personalizado */
+        .btn-pdf {
+            background-color: var(--danger-pdf);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .btn-pdf:hover { background-color: #bb2d3b; color: white; }
+
         .btn-whatsapp {
             background-color: var(--success-whatsapp);
             color: white;
@@ -91,7 +86,6 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
             font-size: 0.85rem;
             font-weight: 500;
         }
-        .btn-whatsapp:hover { background-color: #1eb956; color: white; }
 
         .btn-delete {
             color: #dc3545;
@@ -99,16 +93,6 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
             border: none;
             padding: 8px;
             border-radius: 8px;
-        }
-        .btn-delete:hover { background: #dc3545; color: white; }
-
-        .date-badge {
-            background: #eef2f7;
-            color: #555;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
         }
     </style>
 </head>
@@ -124,70 +108,53 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
 </nav>
 
 <div class="container pb-5">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="fw-bold text-dark mb-1">Listado de Pedidos</h2>
-            <p class="text-muted">Gestión de fabricación y contacto con clientes</p>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="stat-card p-3 d-flex align-items-center">
-                <div class="stat-icon me-3">
-                    <i class="bi bi-file-earmark-text"></i>
-                </div>
-                <div>
-                    <span class="text-muted small fw-bold text-uppercase">Total Solicitudes</span>
-                    <h3 class="fw-bold mb-0 text-primary"><?php echo mysqli_num_rows($resultado); ?></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="table-container">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="thead-custom">
                     <tr>
                         <th class="ps-4">Cliente</th>
-                        <th>Información de Contacto</th>
-                        <th>Detalles del Proyecto</th>
-                        <th>Fecha de Ingreso</th>
-                        <th class="text-center">Gestión</th>
+                        <th>Contacto</th>
+                        <th>Estado</th> 
+                        <th>Fecha</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while($f = mysqli_fetch_assoc($resultado)) { ?>
                     <tr>
                         <td class="ps-4">
-                            <p class="client-name"><?php echo htmlspecialchars($f['nombre']); ?></p>
-                            <span class="id-badge text-muted">ID #<?php echo $f['id']; ?></span>
+                            <strong><?php echo htmlspecialchars($f['nombre']); ?></strong><br>
+                            <small class="text-muted">ID #<?php echo $f['id']; ?></small>
                         </td>
                         <td>
-                            <div class="d-flex flex-column small">
-                                <span class="mb-1"><i class="bi bi-envelope text-muted me-2"></i><?php echo $f['email']; ?></span>
-                                <span><i class="bi bi-whatsapp text-muted me-2"></i><?php echo $f['telefono']; ?></span>
-                            </div>
+                            <small><?php echo $f['email']; ?></small><br>
+                            <small><?php echo $f['telefono']; ?></small>
                         </td>
                         <td>
-                            <div style="max-width: 250px;" class="text-muted small">
-                                <i class="bi bi-chat-left-text me-1"></i> 
-                                <?php echo (strlen($f['mensaje']) > 60) ? substr($f['mensaje'], 0, 60) . '...' : $f['mensaje']; ?>
-                            </div>
+                            <select class="form-select form-select-sm estado-selector" data-id="<?php echo $f['id']; ?>">
+                                <option value="Pendiente" <?php if($f['estado'] == 'Pendiente') echo 'selected'; ?>>🟡 Pendiente</option>
+                                <option value="En Proceso" <?php if($f['estado'] == 'En Proceso') echo 'selected'; ?>>🔵 En Proceso</option>
+                                <option value="Finalizado" <?php if($f['estado'] == 'Finalizado') echo 'selected'; ?>>🟢 Finalizado</option>
+                                <option value="Cancelado" <?php if($f['estado'] == 'Cancelado') echo 'selected'; ?>>🔴 Cancelado</option>
+                            </select>
                         </td>
                         <td>
-                            <span class="date-badge">
-                                <i class="bi bi-calendar3 me-1"></i> <?php echo date('d M, Y', strtotime($f['fecha'])); ?>
-                            </span>
+                            <small class="badge bg-light text-dark border">
+                                <?php echo date('d/m/Y', strtotime($f['fecha'])); ?>
+                            </small>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center gap-2">
-                                <a href="https://wa.me/<?php echo $f['telefono']; ?>?text=Hola%20<?php echo urlencode($f['nombre']); ?>%20de%20AM%20Montajes..." 
-                                   target="_blank" class="btn btn-whatsapp d-flex align-items-center">
-                                    <i class="bi bi-whatsapp me-2"></i> Contactar
+                                <a href="generar_pdf.php?id=<?php echo $f['id']; ?>" target="_blank" class="btn btn-pdf">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
                                 </a>
-                                <a href="eliminar.php?id=<?php echo $f['id']; ?>" 
-                                   onclick="return confirm('¿Está seguro de eliminar esta solicitud?')" 
-                                   class="btn btn-delete" title="Eliminar">
+
+                                <a href="https://wa.me/<?php echo $f['telefono']; ?>?text=Hola..." target="_blank" class="btn btn-whatsapp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+
+                                <a href="eliminar.php?id=<?php echo $f['id']; ?>" onclick="return confirm('¿Eliminar?')" class="btn btn-delete">
                                     <i class="bi bi-trash3"></i>
                                 </a>
                             </div>
@@ -197,14 +164,26 @@ $resultado = mysqli_query($conexion, "SELECT * FROM cotizaciones ORDER BY fecha 
                 </tbody>
             </table>
         </div>
-        <?php if(mysqli_num_rows($resultado) == 0): ?>
-            <div class="text-center p-5">
-                <i class="bi bi-inbox text-muted display-1"></i>
-                <p class="mt-3 text-muted">No hay solicitudes pendientes en este momento.</p>
-            </div>
-        <?php endif; ?>
     </div>
 </div>
+
+<script>
+
+document.querySelectorAll('.estado-selector').forEach(select => {
+    select.addEventListener('change', function() {
+        const id = this.getAttribute('data-id');
+        const nuevoEstado = this.value;
+        fetch('actualizar_estado.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${id}&estado=${nuevoEstado}`
+        }).then(() => {
+            this.style.borderColor = "#25D366";
+            setTimeout(() => { this.style.borderColor = "#dee2e6"; }, 1000);
+        });
+    });
+});
+</script>
 
 </body>
 </html>

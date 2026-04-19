@@ -1,15 +1,21 @@
 <?php
 include("conexion.php");
 
+
+date_default_timezone_set('America/Bogota');
+
 // Recibimos los datos del formulario
 $nombre   = $_POST['nombre'];
 $email    = $_POST['email'];
 $telefono = $_POST['telefono']; 
 $mensaje  = $_POST['mensaje'];
 
-// Insertamos en la base de datos
-$sql = "INSERT INTO cotizaciones (nombre, email, telefono, mensaje) 
-        VALUES ('$nombre', '$email', '$telefono', '$mensaje')";
+
+$fecha    = date('Y-m-d H:i:s'); 
+
+// 3. Agregamos 'fecha' tanto en las columnas como en los VALUES
+$sql = "INSERT INTO cotizaciones (nombre, email, telefono, mensaje, fecha) 
+        VALUES ('$nombre', '$email', '$telefono', '$mensaje', '$fecha')";
 
 $resultado = mysqli_query($conexion, $sql);
 ?>
@@ -79,11 +85,11 @@ $resultado = mysqli_query($conexion, $sql);
     <?php if($resultado): ?>
         <i class="bi bi-check-circle-fill success-icon"></i>
         <h2 class="fw-bold mb-3" style="color: var(--primary-blue);">¡Cotización Enviada!</h2>
-        <p class="text-muted">Hemos recibido su solicitud correctamente. Un asesor técnico de <strong>AM Montajes</strong> se pondrá en contacto con usted en breve.</p>
+        <p class="text-muted">Hemos recibido su solicitud correctamente el día <strong><?php echo date('d/m/Y'); ?></strong>. Un asesor técnico de <strong>AM Montajes</strong> se pondrá en contacto con usted en breve.</p>
     <?php else: ?>
         <i class="bi bi-exclamation-octagon-fill text-danger success-icon"></i>
         <h2 class="fw-bold mb-3">Error al enviar</h2>
-        <p class="text-muted">Lo sentimos, hubo un problema técnico. Por favor, inténtelo de nuevo más tarde.</p>
+        <p class="text-muted">Lo sentimos, hubo un problema técnico: <?php echo mysqli_error($conexion); ?></p>
     <?php endif; ?>
 
     <a href="inicio.php" class="btn btn-home">
