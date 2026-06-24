@@ -17,3 +17,5 @@ Thumbs.db
 
 # Archivos de configuración del editor (VS Code)
 .vscode/
+
+dompdf/
